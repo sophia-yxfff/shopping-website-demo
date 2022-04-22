@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.dao.shoppingDao">
+	<sql id="product_base_column_list">
+		product_information.product_id, product_information.price, product_information.storage,
+		product_information.sales_volume,  product_information.product_type
+	</sql>
+	<sql id="order_base_column_list">
+		order_information.order_id,order_information.product_id,order_information.user_id,order_information.order_date
+	</sql>
+	<sql id="comment_base_column_list">
+		comment_information.product_id,comment_information.user_id,comment_information.user_name,comment_information.comment
+	</sql>
+	<select id="findProductById" resultType="com.example.demo.entity.product">
+		select
+		<include refid="product_base_column_list"></include>
+		from product_information
+		where product_information.product_id = #{product_id}
+	</select>
+	<select id="allProduct" resultType="com.example.demo.entity.product">
+		select
+		<include refid="product_base_column_list"></include>
+		from product_information
+	</select>
+
+	<select id="findCommentById" resultType="com.example.demo.entity.comment">
+		select
+		<include refid="comment_base_column_list"></include>
+		from comment_information
+		where comment_information.product_id = #{product_id}
+	</select>
+
+
+	<select id="showOrderByType" resultType="com.example.demo.entity.order">
+		SELECT
+		<include refid="order_base_column_list"></include>
+		FROM order_information
+		INNER JOIN product_information
+		ON order_information.product_id = product_information.product_id
+		WHERE product_information.product_type = #{product_type}
+	</select>
+	<update id="updateProductById" >
+		UPDATE product_information
+		SET sales_volume=sales_volume+1, storage=storage-1
+		WHERE product_id = #{product_id}
+	</update>
+	<insert id="insertOrder" parameterType="com.example.demo.entity.order">
+		insert into order_information (user_id,product_id,order_date) values (#{user_id},#{product_id},#{order_date})
+	</insert>
+	<insert id="insertComment" parameterType="com.example.demo.entity.comment">
+		insert into comment_information (product_id,user_id,user_name,comment) values (#{product_id},#{user_id},#{user_name},
+		#{comment})
+	</insert>
+</mapper>
